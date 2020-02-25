@@ -17,8 +17,8 @@ typedef struct set_iter set_iter_t;
 
 
 set_node_t *newnode(void *elem);
-char *head(set_iter_t *iter);
-
+char *get_current_item(set_iter_t *iter);
+set_node_t *get_current_node(set_iter_t *iter);
 /*
  * Creates a new set using the given comparison function
  * to compare elements of the set.

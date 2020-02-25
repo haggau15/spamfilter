@@ -27,7 +27,6 @@ static set_t *tokenize(char *filename)
 		fatal_error("fopen() failed");
 	}	
 	tokenize_file(f, wordlist);
-	printf("wordlist size: %d\n",list_size(wordlist));
 	it = list_createiter(wordlist);
 	while (list_hasnext(it)) {
 		set_add(wordset, list_next(it));		
@@ -69,17 +68,11 @@ int main(int argc, char **argv)
 	maildir = argv[3];
 	set_t *set=tokenize("spam/spam1.txt");
 	list_iter_t *iter = set_createiter(set);
-	int i=1;
-	char *c;
-	printf("%s\n",head(iter));
 	while(set_hasnext(iter))
 	{	
-		//printf("%d hasnext: ",set_hasnext(iter));
-		printf("%s\n",set_next(iter));
-		i++;	
+		printf("%s:\n",get_current_item(iter));
+		set_next(iter);
 	}
-	printf("%d hasnext: ",head(iter));
-	set_hasnext(iter);
-
+	printf("Size:%d\n",set_size(set));
     return 0;
 }

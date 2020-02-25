@@ -63,32 +63,62 @@ int set_size(set_t *set)
     return set->size;
 }
 
-char *head(set_iter_t *iter)
+char *get_current_item(set_iter_t *iter)
 {
     //printf("%s\n",iter->node->element);
     return iter->node->element;
+}
+
+set_node_t *get_current_node(set_iter_t *iter)
+{
+    return iter->node;
 }
 /*
  * Adds the given element to the given set.
  */
 void set_add(set_t *set, void *elem)
 {     
-    //set_iter_t *iter= set_createiter(set);
     set_node_t *prev;
+    set_node_t *next;
     set_node_t *node = newnode(elem);
+    node->element=elem;
     if(set_size(set)==0)
     {
         set->head=node;
         set->size=1;
-        node->element=elem;
         node->next=NULL;
         return;
     }
-    node->element=elem;
-    node->next=set->head;
-    set->head=node;
+    list_iter_t *iter = set_createiter(set);
+    next=set->head;
+    prev=NULL;
+    int i = 1;
+    while(set_hasnext(iter))
+	{	
+        printf("Element: %s  Item  %s\n: ",elem,get_current_item(iter));
+        if(set->cmpfunc(elem,get_current_item(iter))<0)
+        {
+            prev=get_current_node(iter);
+            next=prev->next;
+            break;
+        }
+        set_next(iter);  
+        i++;
+	}
+    //printf("%s\n",node->element);
+
+    if(next==set->head)
+    {
+        node->next=set->head;
+        set->head=node;
+        return;
+    }
+    prev->next=node;
+    node->next=next;
     set->size++;
-    //printf("Size: %s \n",set->head->element);
+   
+    //printf("%s\n",set->head->next->element);
+    //printf("Size: %d \n",set->size);
 }
 /*
  * Returns 1 if the given element is contained in
@@ -145,6 +175,10 @@ set_t *set_copy(set_t *set)
 /*
  * The type of set iterators.
  */
+void set_destroyiter(set_iter_t *iter)
+{
+
+}
 
 
 /*
@@ -163,20 +197,12 @@ set_iter_t *set_createiter(set_t *set)
 }
 
 /*
- * Destroys the given set iterator.
- */
-void set_destroyiter(set_iter_t *iter)
-{
-    
-}
-
-/*
  * Returns 0 if the given set iterator has reached the end of the
  * set, or 1 otherwise.
  */
 int set_hasnext(set_iter_t *iter)
 {
-    if (iter->node->next->next == NULL)
+    if (iter->node->next == NULL)
     {
 	    return 0;
     }
@@ -192,7 +218,8 @@ void *set_next(set_iter_t *iter)
     //printf("%s\n",iter->node->element);
 
     iter->node=iter->node->next;
-    return iter->node->next->element;
+    void *element=iter->node->element;
+    return element;
 }
 
 set_node_t *newnode(void *elem)
