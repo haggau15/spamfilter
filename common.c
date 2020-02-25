@@ -17,7 +17,7 @@ void tokenize_file(FILE *file, list_t *list)
     char *word;
     char buf[101];
     buf[100] = 0;
-    
+    printf("1\n");
     while (!feof(file)) {
 		/* Skip non-letters */
 		fscanf(file, "%*[^a-zA-Z0-9'_]");

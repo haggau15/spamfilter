@@ -11,8 +11,13 @@ struct word;
 struct set;
 typedef struct set set_t;
 typedef struct word word_t;
+typedef struct set_node set_node_t;
+typedef struct set_iter set_iter_t;
 
 
+
+set_node_t *newnode(void *elem);
+char *head(set_iter_t *iter);
 
 /*
  * Creates a new set using the given comparison function

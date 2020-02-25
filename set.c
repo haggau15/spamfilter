@@ -5,30 +5,28 @@
 #include "set.h"
 #include "list.h"
 
-struct word
-{
-    char **string;
-};
 
 struct set
 {
+    set_node_t *head;
+    set_node_t *tail;
     cmpfunc_t cmpfunc;
-    word_t **word;
     int size;
-    list_t *list;
-    void *elm;
 };
 
+struct set_node
+{
+    void *element;
+    set_node_t *next;
+    set_node_t *prev;
 
+};
 struct set_iter
 {
     set_t *set;
+    set_node_t *node;
 };
 
-int mainty()
-{
-    set_t *t=set_create(compare_strings);
-}
 /*
  * Creates a new set using the given comparison function
  * to compare elements of the set.
@@ -37,7 +35,14 @@ set_t *set_create(cmpfunc_t cmpfunc)
 {
     
     set_t *set= malloc(sizeof(set_t));
+    if (set==NULL)
+    {
+        return NULL;
+    }
     set->cmpfunc=cmpfunc;
+    set->head=NULL;
+    set->size=0;
+    set->tail=NULL;
     return set;
 }
 
@@ -58,14 +63,33 @@ int set_size(set_t *set)
     return set->size;
 }
 
+char *head(set_iter_t *iter)
+{
+    //printf("%s\n",iter->node->element);
+    return iter->node->element;
+}
 /*
  * Adds the given element to the given set.
  */
 void set_add(set_t *set, void *elem)
-{
-    
+{     
+    //set_iter_t *iter= set_createiter(set);
+    set_node_t *prev;
+    set_node_t *node = newnode(elem);
+    if(set_size(set)==0)
+    {
+        set->head=node;
+        set->size=1;
+        node->element=elem;
+        node->next=NULL;
+        return;
+    }
+    node->element=elem;
+    node->next=set->head;
+    set->head=node;
+    set->size++;
+    //printf("Size: %s \n",set->head->element);
 }
-
 /*
  * Returns 1 if the given element is contained in
  * the given set, 0 otherwise.
@@ -128,9 +152,14 @@ set_t *set_copy(set_t *set)
  */
 set_iter_t *set_createiter(set_t *set)
 {
-    set_iter_t *t= malloc(sizeof(set_t));
-    t->set=set;
-    return t;
+    set_iter_t *iter = malloc(sizeof(set_t));
+    if (iter==NULL)
+    {
+        return NULL;
+    }
+    iter->set=set;
+    iter->node=set->head;
+    return iter;
 }
 
 /*
@@ -147,6 +176,10 @@ void set_destroyiter(set_iter_t *iter)
  */
 int set_hasnext(set_iter_t *iter)
 {
+    if (iter->node->next->next == NULL)
+    {
+	    return 0;
+    }
     return 1;
 }
 
@@ -156,5 +189,20 @@ int set_hasnext(set_iter_t *iter)
  */
 void *set_next(set_iter_t *iter)
 {
-    //return iter->set->list->next;
+    //printf("%s\n",iter->node->element);
+
+    iter->node=iter->node->next;
+    return iter->node->next->element;
+}
+
+set_node_t *newnode(void *elem)
+{
+    set_node_t *node = malloc(sizeof(set_node_t));
+    if (node == NULL)
+        return NULL;
+    
+    node->next = NULL;
+    node->prev = NULL;
+    node->element = elem;
+    return node;
 }
