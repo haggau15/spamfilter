@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #include "set.h"
-#include "set.h"
 #include "list.h"
 
 
@@ -77,7 +76,7 @@ set_node_t *get_current_node(set_iter_t *iter)
  * Adds the given element to the given set.
  */
 void set_add(set_t *set, void *elem)
-{     
+{   
     set_node_t *prev;
     set_node_t *next;
     set_node_t *node = newnode(elem);
@@ -85,40 +84,35 @@ void set_add(set_t *set, void *elem)
     if(set_size(set)==0)
     {
         set->head=node;
-        set->size=1;
+        set->size=0;
         node->next=NULL;
+        node->prev=NULL;
         return;
     }
-    list_iter_t *iter = set_createiter(set);
+    set_iter_t *iter = set_createiter(set);
     next=set->head;
     prev=NULL;
-    int i = 1;
     while(set_hasnext(iter))
-	{	
-        printf("Element: %s  Item  %s\n: ",elem,get_current_item(iter));
-        if(set->cmpfunc(elem,get_current_item(iter))<0)
+	{
+        if(set->cmpfunc(elem,get_current_item(iter))==0){return;}
+        if(set->cmpfunc(elem,get_current_item(iter))>0)
         {
             prev=get_current_node(iter);
             next=prev->next;
-            break;
         }
         set_next(iter);  
-        i++;
 	}
-    //printf("%s\n",node->element);
-
+       
     if(next==set->head)
     {
         node->next=set->head;
         set->head=node;
+        set->size++;
         return;
     }
     prev->next=node;
     node->next=next;
     set->size++;
-   
-    //printf("%s\n",set->head->next->element);
-    //printf("Size: %d \n",set->size);
 }
 /*
  * Returns 1 if the given element is contained in
@@ -168,7 +162,7 @@ set_t *set_difference(set_t *a, set_t *b)
 set_t *set_copy(set_t *set)
 {
     set_t *t= malloc(sizeof(set_t));
-    t= set;
+    t = set;
     return t;
 }
 

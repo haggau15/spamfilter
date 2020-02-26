@@ -28,7 +28,9 @@ static set_t *tokenize(char *filename)
 	}	
 	tokenize_file(f, wordlist);
 	it = list_createiter(wordlist);
-	while (list_hasnext(it)) {
+	int i=0;
+	while (list_hasnext(it)) 
+	{
 		set_add(wordset, list_next(it));		
 	}
 	list_destroyiter(it);
@@ -66,8 +68,8 @@ int main(int argc, char **argv)
 	spamdir = argv[1];
 	nonspamdir = argv[2];
 	maildir = argv[3];
-	set_t *set=tokenize("spam/spam1.txt");
-	list_iter_t *iter = set_createiter(set);
+	set_t *set=tokenize("spam/spam4.txt");
+	set_iter_t *iter = set_createiter(set);
 	while(set_hasnext(iter))
 	{	
 		printf("%s:\n",get_current_item(iter));
